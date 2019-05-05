@@ -1,0 +1,4 @@
+<resources>
+    <string name="lcl_loading">加载中</string>
+    <string name="lcl_loading_failed">失败了</string>
+</resources>

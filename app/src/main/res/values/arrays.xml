@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="ufo_loading">
+        <item>@drawable/ui_waifu2x_ufo_loading_frame1</item>
+        <item>@drawable/ui_waifu2x_ufo_loading_frame2</item>
+        <item>@drawable/ui_waifu2x_ufo_loading_frame3</item>
+        <item>@drawable/ui_waifu2x_ufo_loading_frame2</item>
+    </array>
+
+    <array name="hiyoko_loading">
+        <item>@drawable/hiyoko_0000</item>
+        <item>@drawable/hiyoko_0001</item>
+        <item>@drawable/hiyoko_0002</item>
+        <item>@drawable/hiyoko_0003</item>
+        <item>@drawable/hiyoko_0004</item>
+        <item>@drawable/hiyoko_0005</item>
+        <item>@drawable/hiyoko_0006</item>
+        <item>@drawable/hiyoko_0007</item>
+    </array>
+</resources>

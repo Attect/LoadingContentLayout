@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LoadingContentLayout" >
+        <item name="lcl_background_color">@color/lcl_background</item>
+        <item name="lcl_loading_text">@string/lcl_loading</item>
+        <item name="lcl_failed_text">@string/lcl_loading_failed</item>
+    </style>
+</resources>

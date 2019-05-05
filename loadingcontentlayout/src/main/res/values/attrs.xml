@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LoadingContentLayout">
+
+        <!--加载中角色-->
+        <attr name="lcl_loading_character" format="reference"/>
+
+        <!--加载中角色动画帧数-->
+        <attr name="lcl_loading_character_fps" format="integer"/>
+
+        <!--加载中文本-->
+        <attr name="lcl_loading_text" format="string"/>
+
+        <!--失败角色-->
+        <attr name="lcl_failed_character" format="reference"/>
+
+        <!--失败角色动画帧数-->
+        <attr name="lcl_failed_character_fps" format="integer"/>
+
+        <!--失败文本-->
+        <attr name="lcl_failed_text" format="string"/>
+
+        <!--文本大小-->
+        <attr name="lcl_text_size" format="dimension"/>
+
+        <!--文本颜色-->
+        <attr name="lcl_text_color" format="color" />
+
+        <attr name="lcl_background_color" format="color" />
+
+    </declare-styleable>
+</resources>
