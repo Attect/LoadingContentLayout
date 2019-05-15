@@ -9,6 +9,8 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.FrameLayout
 import androidx.annotation.AnimRes
 import androidx.annotation.ColorInt
@@ -68,8 +70,36 @@ class LoadingContentLayout : FrameLayout {
     @ColorInt
     var containerBackgroundColor = Color.WHITE
 
-    val frameAnimation = FrameAnimation()
 
+    //region BlurView
+
+    /**
+     * 模糊效果渲染色
+     */
+    @ColorInt
+    var blurBackgroundColor = Color.parseColor("#AAFFFFFF")
+
+    /**
+     * 模糊效果起始模糊半径
+     */
+    var blurRadius = 0f
+
+
+    /**
+     * 模糊效果过度时间
+     */
+    var blurAnimationTime = 1000
+
+    /**
+     * 模糊效果实时采样率降低因子
+     */
+    var blurDownSampleFactor = 2f
+
+    private var showBlur = false
+
+    //endregion
+
+    private val frameAnimation = FrameAnimation()
 
 
     constructor(context: Context) : super(context) {
@@ -77,12 +107,21 @@ class LoadingContentLayout : FrameLayout {
 
     constructor(context: Context, attributesSet: AttributeSet) : this(context, attributesSet, 0)
 
-    constructor(context: Context, attributesSet: AttributeSet, defStyleAttr: Int) : super(context, attributesSet, defStyleAttr) {
+    constructor(context: Context, attributesSet: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attributesSet,
+        defStyleAttr
+    ) {
         initLoadLayout(attributesSet)
     }
 
     @SuppressLint("NewApi")
-    constructor(context: Context, attributesSet: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attributesSet, defStyleAttr, defStyleRes) {
+    constructor(context: Context, attributesSet: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(
+        context,
+        attributesSet,
+        defStyleAttr,
+        defStyleRes
+    ) {
         initLoadLayout(attributesSet)
     }
 
@@ -99,18 +138,19 @@ class LoadingContentLayout : FrameLayout {
             val typedArray = context.obtainStyledAttributes(attributesSet, R.styleable.LoadingContentLayout)
             try {
 
-                val loadingResId = typedArray.getResourceId(R.styleable.LoadingContentLayout_lcl_loading_character,0)
+                val loadingResId = typedArray.getResourceId(R.styleable.LoadingContentLayout_lcl_loading_character, 0)
 
-                loadingCharacterAnimFPS = typedArray.getInt(R.styleable.LoadingContentLayout_lcl_loading_character_fps, 60)
+                loadingCharacterAnimFPS =
+                    typedArray.getInt(R.styleable.LoadingContentLayout_lcl_loading_character_fps, 60)
 
-                if(loadingResId > 0){
+                if (loadingResId > 0) {
                     val loadingCharacterAnimTypedArray = resources.obtainTypedArray(loadingResId)
-                    for (i in 0 until loadingCharacterAnimTypedArray.length()){
-                        loadingCharacterDrawableIds.add(loadingCharacterAnimTypedArray.getResourceId(i,-1))
+                    for (i in 0 until loadingCharacterAnimTypedArray.length()) {
+                        loadingCharacterDrawableIds.add(loadingCharacterAnimTypedArray.getResourceId(i, -1))
                     }
-                    frameAnimation.imageView = loadLayout?.imageView
+                    frameAnimation.imageView = loadLayout?.lvlImageView
                     frameAnimation.frameRess = loadingCharacterDrawableIds.toIntArray()
-                    frameAnimation.duration = 1000/loadingCharacterAnimFPS
+                    frameAnimation.duration = 1000 / loadingCharacterAnimFPS
                     frameAnimation.isRepeat = true
                     loadingCharacterAnimTypedArray.recycle()
                 }
@@ -122,7 +162,8 @@ class LoadingContentLayout : FrameLayout {
                 typedArray.getDrawable(R.styleable.LoadingContentLayout_lcl_failed_character)?.let {
                     failedCharacterDrawable = it
                 }
-                failedCharacterAnimFPS = typedArray.getInt(R.styleable.LoadingContentLayout_lcl_failed_character_fps, 60)
+                failedCharacterAnimFPS =
+                    typedArray.getInt(R.styleable.LoadingContentLayout_lcl_failed_character_fps, 60)
                 typedArray.getString(R.styleable.LoadingContentLayout_lcl_failed_text)?.let {
                     if (!TextUtils.isEmpty(it)) failedText = it
                 }
@@ -131,7 +172,19 @@ class LoadingContentLayout : FrameLayout {
                 }
                 textColor = typedArray.getColor(R.styleable.LoadingContentLayout_lcl_text_color, Color.BLACK)
 
-                containerBackgroundColor = typedArray.getColor(R.styleable.LoadingContentLayout_lcl_background_color,Color.WHITE)
+                containerBackgroundColor =
+                    typedArray.getColor(R.styleable.LoadingContentLayout_lcl_background_color, Color.WHITE)
+
+                //region BlurView
+                blurBackgroundColor = typedArray.getColor(
+                    R.styleable.LoadingContentLayout_lcl_blur_background_color,
+                    Color.parseColor("#AAFFFFFF")
+                )
+                blurRadius = typedArray.getDimension(R.styleable.LoadingContentLayout_lcl_blur_radius, 0f)
+                blurAnimationTime = typedArray.getInt(R.styleable.LoadingContentLayout_lcl_blur_animation_time, 1000)
+                blurDownSampleFactor =
+                    typedArray.getFloat(R.styleable.LoadingContentLayout_lcl_blur_down_sample_factor, 2f)
+                //endregion BlurView
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -145,13 +198,17 @@ class LoadingContentLayout : FrameLayout {
 
     }
 
-    private fun applyLoadLayout(){
-        if(loadLayout?.parent == null){
+    private fun applyLoadLayout() {
+        if (loadLayout?.parent == null) {
             loadLayout?.setBackgroundColor(containerBackgroundColor)
             addView(loadLayout, childCount) //在最后加上，确保覆盖
-            textView.setTextColor(textColor)
-            if((textSize > 0)) textView.textSize = textSize
-
+            loadLayout?.lvlTextView?.setTextColor(textColor)
+            if ((textSize > 0)) lvlTextView.textSize = textSize
+            loadLayout?.lvlRealtimeBlurView?.blurRadius = blurRadius
+            loadLayout?.lvlRealtimeBlurView?.apply {
+                setOverlayColor(blurBackgroundColor)
+                setDownSampleFactor(blurDownSampleFactor)
+            }
         }
 
     }
@@ -161,10 +218,15 @@ class LoadingContentLayout : FrameLayout {
      */
     public fun startLoading() {
         post {
-            loadLayout?.setBackgroundColor(containerBackgroundColor)
-            frameAnimation.startPlay()
-            loadLayout?.textView?.text = loadingText
-            loadLayout?.visibility = View.VISIBLE
+            loadLayout?.apply {
+                setBackgroundColor(containerBackgroundColor)
+                lvlImageView.visibility = View.VISIBLE
+                frameAnimation.startPlay()
+                lvlTextView?.visibility = View.VISIBLE
+                lvlTextView?.text = loadingText
+                visibility = View.VISIBLE
+            }
+
         }
 
     }
@@ -173,9 +235,9 @@ class LoadingContentLayout : FrameLayout {
      * 停止显示加载
      * 通常此时也加载成功了
      */
-    public fun stopLoading(){
-        loadLayout?.imageView?.setImageDrawable(null)
-        loadLayout?.textView?.text = ""
+    public fun stopLoading() {
+        loadLayout?.lvlImageView?.setImageDrawable(null)
+        loadLayout?.lvlTextView?.text = ""
         loadLayout?.visibility = View.GONE
         frameAnimation.release()
     }
@@ -183,12 +245,78 @@ class LoadingContentLayout : FrameLayout {
     /**
      * 显示加载失败
      */
-    public fun showFailed(){
-        loadLayout?.setBackgroundColor(containerBackgroundColor)
-        loadLayout?.imageView?.setImageDrawable(failedCharacterDrawable)
-        loadLayout?.textView?.text = failedText
-        loadLayout?.visibility = View.VISIBLE
+    public fun showFailed() {
+        loadLayout?.apply {
+            setBackgroundColor(containerBackgroundColor)
+            lvlImageView?.visibility = View.VISIBLE
+            lvlImageView?.setImageDrawable(failedCharacterDrawable)
+            lvlTextView?.visibility = View.VISIBLE
+            lvlTextView?.text = failedText
+            visibility = View.VISIBLE
+        }
+
         frameAnimation.release()
+    }
+
+    public fun toggleBlur(view: View?) {
+        showBlur(!showBlur, view)
+    }
+
+    public fun showBlur(show: Boolean, view: View?) {
+        loadLayout?.post {
+            postShowBlur(show)
+        }
+        view?.invalidate() //避免部分view动画冻结
+    }
+
+    private fun postShowBlur(show: Boolean) {
+        showBlur = show
+        loadLayout?.apply {
+            setBackgroundColor(Color.TRANSPARENT)
+            lvlImageView?.visibility = View.GONE
+            lvlTextView?.visibility = View.GONE
+        }
+
+        if (show) {
+            val alphaAnimation = AlphaAnimation(0f, 1f).apply {
+                duration = blurAnimationTime.toLong()
+                setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationRepeat(animation: Animation?) {
+                    }
+
+                    override fun onAnimationEnd(animation: Animation?) {
+                    }
+
+                    override fun onAnimationStart(animation: Animation?) {
+
+                    }
+
+                })
+            }
+            loadLayout?.visibility = View.VISIBLE
+            loadLayout?.lvlRealtimeBlurView?.visibility = View.VISIBLE
+            loadLayout?.lvlRealtimeBlurView?.startAnimation(alphaAnimation)
+
+        } else {
+            val alphaAnimation = AlphaAnimation(1f, 0f).apply {
+                duration = blurAnimationTime.toLong()
+                setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationRepeat(animation: Animation?) {
+                    }
+
+                    override fun onAnimationEnd(animation: Animation?) {
+                        loadLayout?.lvlRealtimeBlurView?.visibility = View.GONE
+                        loadLayout?.visibility = View.GONE
+                    }
+
+                    override fun onAnimationStart(animation: Animation?) {
+                    }
+
+                })
+            }
+            loadLayout?.lvlRealtimeBlurView?.startAnimation(alphaAnimation)
+
+        }
     }
 
 

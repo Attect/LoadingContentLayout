@@ -26,7 +26,20 @@
         <!--文本颜色-->
         <attr name="lcl_text_color" format="color" />
 
+        <!--标准背景色-->
         <attr name="lcl_background_color" format="color" />
+
+        <!--模糊效果渲染色-->
+        <attr name="lcl_blur_background_color" format="color" />
+
+        <!--模糊效果起始模糊半径-->
+        <attr name="lcl_blur_radius" format="dimension"/>
+
+        <!--模糊效果过度时间-->
+        <attr name="lcl_blur_animation_time" format="integer" />
+
+        <!--模糊效果实时采样率降低因子-->
+        <attr name="lcl_blur_down_sample_factor" format="float"/>
 
     </declare-styleable>
 </resources>
