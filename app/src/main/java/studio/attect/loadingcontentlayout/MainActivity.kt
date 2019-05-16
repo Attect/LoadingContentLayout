@@ -4,9 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.loadingContentLayout
 import studio.attect.ui.FrameAnimation
+import studio.attect.ui.LoadingContentLayout
+import studio.attect.ui.LoadingContentUI
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LoadingContentUI {
     private val frameAnimation = FrameAnimation()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,5 +52,10 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         frameAnimation.release()
+    }
+
+
+    override fun getLoadContentLayout(): LoadingContentLayout? {
+        return loadingContentLayout
     }
 }
