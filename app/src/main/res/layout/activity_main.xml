@@ -6,6 +6,7 @@
         android:layout_height="match_parent"
         android:id="@+id/loadingContentLayout"
         app:lcl_blur_radius="20dp"
+        app:lcl_blur_animation_time="2000"
         >
 
     <androidx.constraintlayout.widget.ConstraintLayout

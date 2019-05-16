@@ -88,7 +88,7 @@ class LoadingContentLayout : FrameLayout {
     /**
      * 模糊效果过度时间
      */
-    var blurAnimationTime = 1000
+    var blurAnimationTime = 0
 
     /**
      * 模糊效果实时采样率降低因子
@@ -181,7 +181,7 @@ class LoadingContentLayout : FrameLayout {
                     Color.parseColor("#AAFFFFFF")
                 )
                 blurRadius = typedArray.getDimension(R.styleable.LoadingContentLayout_lcl_blur_radius, 0f)
-                blurAnimationTime = typedArray.getInt(R.styleable.LoadingContentLayout_lcl_blur_animation_time, 1000)
+                blurAnimationTime = typedArray.getInt(R.styleable.LoadingContentLayout_lcl_blur_animation_time, 0)
                 blurDownSampleFactor =
                     typedArray.getFloat(R.styleable.LoadingContentLayout_lcl_blur_down_sample_factor, 2f)
                 //endregion BlurView
@@ -219,12 +219,16 @@ class LoadingContentLayout : FrameLayout {
     public fun startLoading() {
         post {
             loadLayout?.apply {
-                setBackgroundColor(containerBackgroundColor)
+                if(blurAnimationTime > 0){
+                    postShowBlur(true)
+                }else{
+                    setBackgroundColor(containerBackgroundColor)
+                    visibility = View.VISIBLE
+                }
                 lvlImageView.visibility = View.VISIBLE
                 frameAnimation.startPlay()
                 lvlTextView?.visibility = View.VISIBLE
                 lvlTextView?.text = loadingText
-                visibility = View.VISIBLE
             }
 
         }
@@ -236,9 +240,14 @@ class LoadingContentLayout : FrameLayout {
      * 通常此时也加载成功了
      */
     public fun stopLoading() {
-        loadLayout?.lvlImageView?.setImageDrawable(null)
-        loadLayout?.lvlTextView?.text = ""
-        loadLayout?.visibility = View.GONE
+        if (showBlur){
+            postShowBlur(false)
+        }else{
+            loadLayout?.lvlImageView?.setImageDrawable(null)
+            loadLayout?.lvlTextView?.text = ""
+            loadLayout?.visibility = View.GONE
+        }
+
         frameAnimation.release()
     }
 
@@ -247,12 +256,16 @@ class LoadingContentLayout : FrameLayout {
      */
     public fun showFailed() {
         loadLayout?.apply {
-            setBackgroundColor(containerBackgroundColor)
+            if(!showBlur && blurAnimationTime>0) {
+                postShowBlur(true)
+            }else if(!showBlur){
+                setBackgroundColor(containerBackgroundColor)
+                visibility = View.VISIBLE
+            }
             lvlImageView?.visibility = View.VISIBLE
             lvlImageView?.setImageDrawable(failedCharacterDrawable)
             lvlTextView?.visibility = View.VISIBLE
             lvlTextView?.text = failedText
-            visibility = View.VISIBLE
         }
 
         frameAnimation.release()
@@ -262,6 +275,12 @@ class LoadingContentLayout : FrameLayout {
         showBlur(!showBlur, view)
     }
 
+    /**
+     * 直接显示/关闭模糊遮罩
+     *
+     * @param show 是否显示
+     * @param view 触发显示的视图,因为会截取一次DecorView，触发视图会被留影，需要更新一次它来确保显示正确
+     */
     public fun showBlur(show: Boolean, view: View?) {
         loadLayout?.post {
             postShowBlur(show)
@@ -270,11 +289,10 @@ class LoadingContentLayout : FrameLayout {
     }
 
     private fun postShowBlur(show: Boolean) {
+        if(blurRadius == 0f || blurAnimationTime == 0) return
         showBlur = show
         loadLayout?.apply {
             setBackgroundColor(Color.TRANSPARENT)
-            lvlImageView?.visibility = View.GONE
-            lvlTextView?.visibility = View.GONE
         }
 
         if (show) {
@@ -295,7 +313,8 @@ class LoadingContentLayout : FrameLayout {
             }
             loadLayout?.visibility = View.VISIBLE
             loadLayout?.lvlRealtimeBlurView?.visibility = View.VISIBLE
-            loadLayout?.lvlRealtimeBlurView?.startAnimation(alphaAnimation)
+            loadLayout?.clearAnimation()
+            loadLayout?.startAnimation(alphaAnimation)
 
         } else {
             val alphaAnimation = AlphaAnimation(1f, 0f).apply {
@@ -314,7 +333,8 @@ class LoadingContentLayout : FrameLayout {
 
                 })
             }
-            loadLayout?.lvlRealtimeBlurView?.startAnimation(alphaAnimation)
+            loadLayout?.clearAnimation()
+            loadLayout?.startAnimation(alphaAnimation)
 
         }
     }

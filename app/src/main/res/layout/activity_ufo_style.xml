@@ -1,41 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".UFOStyleActivity">
-
-    <studio.attect.ui.LoadingContentLayout
-        android:id="@+id/loadingContentLayout"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:lcl_background_color="@color/lcl_background"
-        app:lcl_failed_character="@drawable/ui_waifu2x_ufo_loading_failed"
-        app:lcl_failed_text="加载失败"
-        app:lcl_loading_character="@array/ufo_loading"
-        app:lcl_loading_character_fps="60"
-        app:lcl_loading_text="加载中">
+        tools:context=".UFOStyleActivity">
+
+    <studio.attect.ui.LoadingContentLayout
+            android:id="@+id/loadingContentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lcl_background_color="@color/lcl_background"
+            app:lcl_failed_character="@drawable/ui_waifu2x_ufo_loading_failed"
+            app:lcl_failed_text="加载失败"
+            app:lcl_loading_character="@array/ufo_loading"
+            app:lcl_loading_character_fps="60"
+            app:lcl_loading_text="加载中"
+            app:lcl_blur_animation_time="2000"
+            app:lcl_blur_radius="20dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
             <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hello World!\n点我开始"
-                android:textColor="#000"
-                android:textSize="20sp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                />
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hello World!\n点我开始"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:srcCompat="@drawable/ui_waifu2x_ufo_loading_failed"
+                    />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
