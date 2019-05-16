@@ -232,11 +232,13 @@ class LoadingContentLayout : FrameLayout {
         return loadLayout?.lvlImageView
     }
 
-
+    public fun startLoading(){
+        startLoading(loadingText)
+    }
     /**
      * 显示正在加载
      */
-    public fun startLoading() {
+    public fun startLoading(text:String = loadingText) {
         post {
             loadLayout?.apply {
                 if(blurAnimationTime > 0){
@@ -248,7 +250,7 @@ class LoadingContentLayout : FrameLayout {
                 lvlImageView.visibility = View.VISIBLE
                 frameAnimation.startPlay()
                 lvlTextView?.visibility = View.VISIBLE
-                lvlTextView?.text = loadingText
+                lvlTextView?.text = text
             }
 
         }
