@@ -14,6 +14,9 @@ import android.view.animation.Animation
 import android.widget.FrameLayout
 import androidx.annotation.AnimRes
 import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import kotlinx.android.synthetic.main.load_layout.view.*
 
 /**
@@ -212,6 +215,23 @@ class LoadingContentLayout : FrameLayout {
         }
 
     }
+
+    /**
+     * 获得显示文字的TextView
+     * 并不一定存在
+     */
+    public fun getTextView(): AppCompatTextView?{
+        return loadLayout?.lvlTextView
+    }
+
+    /**
+     * 获得显示图片的ImageView
+     * 并不一定存在
+     */
+    public fun getImageView():AppCompatImageView?{
+        return loadLayout?.lvlImageView
+    }
+
 
     /**
      * 显示正在加载
