@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), LoadingContentUI {
             loadingContentLayout?.showBlur(true,it)
             it.postDelayed({
                 loadingContentLayout?.showBlur(false,it)
-            },5000)
+            },10000)
         }
 
     }

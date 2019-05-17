@@ -100,6 +100,8 @@ class LoadingContentLayout : FrameLayout {
 
     private var showBlur = false
 
+    private var lastBlurTime = 0L
+
     //endregion
 
     private val frameAnimation = FrameAnimation()
@@ -304,9 +306,12 @@ class LoadingContentLayout : FrameLayout {
      * @param view 触发显示的视图,因为会截取一次DecorView，触发视图会被留影，需要更新一次它来确保显示正确
      */
     public fun showBlur(show: Boolean, view: View?) {
-        loadLayout?.post {
+        var delay = 0L
+        if((System.currentTimeMillis() - lastBlurTime) < blurAnimationTime) delay = blurAnimationTime.toLong()
+        postDelayed( {
+            lastBlurTime = System.currentTimeMillis()
             postShowBlur(show)
-        }
+        },delay)
         view?.invalidate() //避免部分view动画冻结
     }
 
@@ -329,12 +334,12 @@ class LoadingContentLayout : FrameLayout {
 
                     override fun onAnimationStart(animation: Animation?) {
 
+                        loadLayout?.visibility = View.VISIBLE
+                        loadLayout?.lvlRealtimeBlurView?.visibility = View.VISIBLE
                     }
 
                 })
             }
-            loadLayout?.visibility = View.VISIBLE
-            loadLayout?.lvlRealtimeBlurView?.visibility = View.VISIBLE
             loadLayout?.clearAnimation()
             loadLayout?.startAnimation(alphaAnimation)
 
