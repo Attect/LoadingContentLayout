@@ -234,17 +234,17 @@ class LoadingContentLayout : FrameLayout {
         return loadLayout?.lvlImageView
     }
 
-    public fun startLoading(){
-        startLoading(loadingText)
+    public fun startLoading(startAnimation:Boolean = true){
+        startLoading(loadingText,startAnimation)
     }
     /**
      * 显示正在加载
      */
-    public fun startLoading(text:String = loadingText) {
+    public fun startLoading(text:String = loadingText,startAnimation:Boolean = true) {
         post {
             loadLayout?.apply {
                 if(blurAnimationTime > 0){
-                    postShowBlur(true)
+                    postShowBlur(true,startAnimation,true)
                 }else{
                     setBackgroundColor(containerBackgroundColor)
                     visibility = View.VISIBLE
@@ -259,13 +259,14 @@ class LoadingContentLayout : FrameLayout {
 
     }
 
+
     /**
      * 停止显示加载
      * 通常此时也加载成功了
      */
-    public fun stopLoading() {
+    public fun stopLoading(stopAnimation:Boolean = false) {
         if (showBlur){
-            postShowBlur(false)
+            postShowBlur(false,true, stopAnimation)
         }else{
             loadLayout?.lvlImageView?.setImageDrawable(null)
             loadLayout?.lvlTextView?.text = ""
@@ -315,7 +316,7 @@ class LoadingContentLayout : FrameLayout {
         view?.invalidate() //避免部分view动画冻结
     }
 
-    private fun postShowBlur(show: Boolean) {
+    private fun postShowBlur(show: Boolean,showAnimation:Boolean = true,hideAnimation:Boolean = true) {
         if(blurRadius == 0f || blurAnimationTime == 0) return
         showBlur = show
         loadLayout?.apply {
@@ -323,45 +324,57 @@ class LoadingContentLayout : FrameLayout {
         }
 
         if (show) {
-            val alphaAnimation = AlphaAnimation(0f, 1f).apply {
-                duration = blurAnimationTime.toLong()
-                setAnimationListener(object : Animation.AnimationListener {
-                    override fun onAnimationRepeat(animation: Animation?) {
-                    }
+            if(showAnimation){
+                val alphaAnimation = AlphaAnimation(0f, 1f).apply {
+                    duration = blurAnimationTime.toLong()
+                    setAnimationListener(object : Animation.AnimationListener {
+                        override fun onAnimationRepeat(animation: Animation?) {
+                        }
 
-                    override fun onAnimationEnd(animation: Animation?) {
-                    }
+                        override fun onAnimationEnd(animation: Animation?) {
+                        }
 
-                    override fun onAnimationStart(animation: Animation?) {
+                        override fun onAnimationStart(animation: Animation?) {
 
-                        loadLayout?.visibility = View.VISIBLE
-                        loadLayout?.lvlRealtimeBlurView?.visibility = View.VISIBLE
-                    }
+                            loadLayout?.visibility = View.VISIBLE
+                            loadLayout?.lvlRealtimeBlurView?.visibility = View.VISIBLE
+                        }
 
-                })
+                    })
+                }
+                loadLayout?.clearAnimation()
+                loadLayout?.startAnimation(alphaAnimation)
+            }else{
+                loadLayout?.visibility = View.VISIBLE
+                loadLayout?.lvlRealtimeBlurView?.visibility = View.VISIBLE
             }
-            loadLayout?.clearAnimation()
-            loadLayout?.startAnimation(alphaAnimation)
+
 
         } else {
-            val alphaAnimation = AlphaAnimation(1f, 0f).apply {
-                duration = blurAnimationTime.toLong()
-                setAnimationListener(object : Animation.AnimationListener {
-                    override fun onAnimationRepeat(animation: Animation?) {
-                    }
+            if(hideAnimation){
+                val alphaAnimation = AlphaAnimation(1f, 0f).apply {
+                    duration = blurAnimationTime.toLong()
+                    setAnimationListener(object : Animation.AnimationListener {
+                        override fun onAnimationRepeat(animation: Animation?) {
+                        }
 
-                    override fun onAnimationEnd(animation: Animation?) {
-                        loadLayout?.lvlRealtimeBlurView?.visibility = View.GONE
-                        loadLayout?.visibility = View.GONE
-                    }
+                        override fun onAnimationEnd(animation: Animation?) {
+                            loadLayout?.lvlRealtimeBlurView?.visibility = View.GONE
+                            loadLayout?.visibility = View.GONE
+                        }
 
-                    override fun onAnimationStart(animation: Animation?) {
-                    }
+                        override fun onAnimationStart(animation: Animation?) {
+                        }
 
-                })
+                    })
+                }
+                loadLayout?.clearAnimation()
+                loadLayout?.startAnimation(alphaAnimation)
+            }else{
+                loadLayout?.lvlRealtimeBlurView?.visibility = View.GONE
+                loadLayout?.visibility = View.GONE
             }
-            loadLayout?.clearAnimation()
-            loadLayout?.startAnimation(alphaAnimation)
+
 
         }
     }
