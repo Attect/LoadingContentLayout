@@ -14,7 +14,6 @@ import android.view.animation.Animation
 import android.widget.FrameLayout
 import androidx.annotation.AnimRes
 import androidx.annotation.ColorInt
-import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import kotlinx.android.synthetic.main.load_layout.view.*
@@ -264,7 +263,7 @@ class LoadingContentLayout : FrameLayout {
      * 停止显示加载
      * 通常此时也加载成功了
      */
-    public fun stopLoading(stopAnimation:Boolean = false) {
+    public fun stopLoading(stopAnimation: Boolean = true) {
         if (showBlur){
             postShowBlur(false,true, stopAnimation)
         }else{
