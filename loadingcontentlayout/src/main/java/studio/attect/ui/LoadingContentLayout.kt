@@ -205,7 +205,7 @@ class LoadingContentLayout : FrameLayout {
     private fun applyLoadLayout() {
         if (loadLayout?.parent == null) {
             loadLayout?.setBackgroundColor(containerBackgroundColor)
-            addView(loadLayout, childCount) //在最后加上，确保覆盖
+            addView(loadLayout)
             loadLayout?.lvlTextView?.setTextColor(textColor)
             if ((textSize > 0)) lvlTextView.textSize = textSize
             loadLayout?.lvlRealtimeBlurView?.blurRadius = blurRadius
